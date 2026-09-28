@@ -1,0 +1,3295 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>🧪 Alkan-Checker</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(0,0,0,0.04) 0 2px, transparent 3px),
+        linear-gradient(135deg, #f5f5f5, #ffffff);
+    color: #111;
+    min-height: 100vh;
+}
+
+.page {
+    width: 100%;
+    max-width: 1050px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+}
+
+header {
+    background: #fff;
+    border: 2px solid #111;
+    border-radius: 22px;
+    padding: 22px;
+    margin-bottom: 18px;
+    box-shadow: 6px 6px 0 #111;
+    position: relative;
+    overflow: hidden;
+}
+
+header h1 {
+    margin: 0;
+    font-size: clamp(2rem, 5vw, 3rem);
+}
+
+header p {
+    margin: 7px 0 0;
+    color: #555;
+    font-size: 1rem;
+}
+
+.molecule-decoration {
+    position: absolute;
+    right: 25px;
+    top: 20px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    opacity: 0.8;
+}
+
+.atom {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #111;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+.bond {
+    width: 24px;
+    height: 3px;
+    background: #111;
+}
+
+.oil-drop {
+    position: absolute;
+    right: 18px;
+    bottom: -18px;
+    width: 70px;
+    height: 90px;
+    background: #111;
+    border-radius: 50% 50% 55% 55% / 35% 35% 70% 70%;
+    transform: rotate(12deg);
+    opacity: 0.06;
+}
+
+.card {
+    background: white;
+    border: 2px solid #111;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 6px 6px 0 #111;
+    margin-bottom: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+h2 {
+    margin-top: 0;
+    font-size: 1.6rem;
+}
+
+.center {
+    text-align: center;
+}
+
+.course-buttons,
+.mode-buttons,
+.option-grid,
+.team-count-buttons,
+.question-count-buttons {
+    display: grid;
+    gap: 14px;
+}
+
+.course-buttons,
+.mode-buttons {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.team-count-buttons,
+.question-count-buttons {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        background 0.12s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+.course-btn,
+.mode-btn,
+.setting-btn {
+    background: white;
+    border: 2px solid #111;
+    border-radius: 16px;
+    padding: 18px;
+    font-size: 1.1rem;
+    box-shadow: 3px 3px 0 #111;
+}
+
+.course-btn:hover,
+.mode-btn:hover,
+.setting-btn:hover {
+    background: #f0f0f0;
+}
+
+.course-btn strong,
+.mode-btn strong {
+    display: block;
+    font-size: 1.35rem;
+}
+
+.mode-btn.selected,
+.setting-btn.selected {
+    background: #111;
+    color: white;
+}
+
+.selection-title {
+    margin: 25px 0 12px;
+    font-size: 1.15rem;
+    font-weight: bold;
+}
+
+.setup-section {
+    margin-top: 22px;
+}
+
+.setting-btn {
+    padding: 15px;
+    font-size: 1rem;
+}
+
+.start-game-btn {
+    width: 100%;
+    margin-top: 25px;
+    padding: 18px;
+    border: 2px solid #111;
+    border-radius: 16px;
+    background: #111;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    box-shadow: 4px 4px 0 #777;
+}
+
+.start-game-btn:hover {
+    background: #222;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.progress {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.score {
+    font-weight: bold;
+    padding: 9px 14px;
+    border: 2px solid #111;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.team-banner {
+    border: 3px solid #111;
+    border-radius: 18px;
+    padding: 15px;
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    background: #eee;
+}
+
+.team-scores {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.team-score {
+    border: 2px solid #111;
+    border-radius: 12px;
+    padding: 8px 13px;
+    font-weight: bold;
+    background: white;
+}
+
+.team-score.active {
+    box-shadow: 0 0 0 3px rgba(0,0,0,0.15);
+}
+
+.question-card {
+    background: white;
+    border: 3px solid #111;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 6px 6px 0 #111;
+    transition: border-color 0.2s ease;
+}
+
+.question-type {
+    display: inline-block;
+    padding: 6px 10px;
+    border: 2px solid #111;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+    background: #f5f5f5;
+}
+
+.question-text {
+    font-size: clamp(1.2rem, 3vw, 1.55rem);
+    line-height: 1.4;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.option-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.answer-btn {
+    min-height: 70px;
+    background: white;
+    border: 2px solid #111;
+    border-radius: 15px;
+    padding: 14px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    box-shadow: 3px 3px 0 #111;
+}
+
+.answer-btn:hover {
+    background: #f1f1f1;
+}
+
+.answer-btn.correct {
+    background: #dff5df;
+    border-color: #247524;
+    color: #145414;
+}
+
+.answer-btn.wrong {
+    background: #f9dddd;
+    border-color: #a22;
+    color: #711;
+}
+
+.answer-btn.disabled {
+    cursor: default;
+    transform: none;
+}
+
+.feedback {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 15px;
+    border: 2px solid #111;
+    line-height: 1.5;
+}
+
+.feedback.correct {
+    background: #e8f8e8;
+}
+
+.feedback.wrong {
+    background: #faeaea;
+}
+
+.next-btn {
+    margin-top: 15px;
+    width: 100%;
+    padding: 14px;
+    background: #111;
+    color: white;
+    border: 2px solid #111;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.structure-box {
+    background: #fafafa;
+    border: 2px solid #111;
+    border-radius: 16px;
+    padding: 10px;
+    margin: 10px auto 20px;
+    max-width: 900px;
+    overflow-x: auto;
+}
+
+.structure-box svg {
+    display: block;
+    margin: auto;
+}
+
+.formula {
+    font-size: 1.35rem;
+    font-weight: bold;
+}
+
+.formula sub {
+    font-size: 0.7em;
+    vertical-align: sub;
+}
+
+.result-card {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.result-score {
+    font-size: 3rem;
+    font-weight: bold;
+    margin: 15px 0;
+}
+
+.result-percent {
+    font-size: 1.3rem;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.winner {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 20px 0;
+}
+
+.final-team-list {
+    display: grid;
+    gap: 12px;
+    margin: 25px auto;
+    max-width: 600px;
+}
+
+.final-team {
+    border: 2px solid #111;
+    border-radius: 14px;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.restart-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+.restart-btn,
+.change-btn {
+    padding: 14px 20px;
+    border-radius: 14px;
+    border: 2px solid #111;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.restart-btn {
+    background: #111;
+    color: white;
+}
+
+.change-btn {
+    background: white;
+}
+
+/* FEUERWERK */
+
+#fireworksCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.fireworks-title {
+    position: relative;
+    z-index: 2;
+}
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+    .course-buttons,
+    .mode-buttons,
+    .option-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .team-count-buttons,
+    .question-count-buttons {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .molecule-decoration {
+        display: none;
+    }
+
+    .card,
+    .question-card,
+    header {
+        padding: 18px;
+    }
+
+    .answer-btn {
+        min-height: 60px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+<canvas id="fireworksCanvas" class="hidden"></canvas>
+
+
+<div class="page">
+
+<header>
+
+    <div class="molecule-decoration">
+
+        <div class="atom">C</div>
+        <div class="bond"></div>
+        <div class="atom">C</div>
+        <div class="bond"></div>
+        <div class="atom">C</div>
+
+    </div>
+
+    <h1>🧪 Alkan-Checker</h1>
+
+    <p>
+        Teste dein Wissen über Alkane!
+    </p>
+
+    <div class="oil-drop"></div>
+
+</header>
+
+
+<!-- KURSAUSWAHL -->
+
+<section class="card center" id="startScreen">
+
+    <h2>Wähle deinen Kurs</h2>
+
+    <div class="course-buttons">
+
+        <button
+            class="course-btn"
+            onclick="selectCourse('G')">
+
+            <strong>G-Kurs</strong>
+
+        </button>
+
+        <button
+            class="course-btn"
+            onclick="selectCourse('E')">
+
+            <strong>E-Kurs</strong>
+
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- SPIELMODUS -->
+
+<section
+    class="card hidden"
+    id="modeScreen">
+
+    <h2 class="center">
+        Wähle den Spielmodus
+    </h2>
+
+    <div class="mode-buttons">
+
+        <button
+            class="mode-btn"
+            id="singleModeButton"
+            onclick="selectMode('single')">
+
+            <strong>👤 Einzelspieler</strong>
+
+        </button>
+
+        <button
+            class="mode-btn"
+            id="teamModeButton"
+            onclick="selectMode('team')">
+
+            <strong>👥 Team-Modus</strong>
+
+        </button>
+
+    </div>
+
+
+    <div
+        id="teamSettings"
+        class="hidden">
+
+        <div class="setup-section">
+
+            <div class="selection-title">
+                Wie viele Teams?
+            </div>
+
+            <div class="team-count-buttons">
+
+                <button
+                    class="setting-btn"
+                    onclick="selectTeamCount(2, this)">
+                    2 Teams
+                </button>
+
+                <button
+                    class="setting-btn"
+                    onclick="selectTeamCount(3, this)">
+                    3 Teams
+                </button>
+
+                <button
+                    class="setting-btn"
+                    onclick="selectTeamCount(4, this)">
+                    4 Teams
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="setup-section">
+
+            <div class="selection-title">
+                Wie viele Fragen?
+            </div>
+
+            <div class="question-count-buttons">
+
+                <button
+                    class="setting-btn"
+                    onclick="selectQuestionCount(10, this)">
+                    10
+                </button>
+
+                <button
+                    class="setting-btn"
+                    onclick="selectQuestionCount(14, this)">
+                    14
+                </button>
+
+                <button
+                    class="setting-btn"
+                    onclick="selectQuestionCount(20, this)">
+                    20
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <button
+        class="start-game-btn"
+        onclick="startGame()">
+
+        Spiel starten
+
+    </button>
+
+</section>
+
+
+<!-- SPIEL -->
+
+<section
+    class="hidden"
+    id="gameScreen">
+
+    <div class="top-bar">
+
+        <div
+            class="progress"
+            id="progressText">
+            Frage 1 von 10
+        </div>
+
+        <div
+            class="score"
+            id="scoreText">
+            Punkte: 0
+        </div>
+
+    </div>
+
+
+    <div
+        class="team-banner hidden"
+        id="teamBanner">
+    </div>
+
+
+    <div
+        class="team-scores hidden"
+        id="teamScores">
+    </div>
+
+
+    <div
+        class="question-card"
+        id="questionCard">
+
+        <div
+            class="question-type"
+            id="questionType">
+            Aufgabe
+        </div>
+
+        <div
+            class="question-text"
+            id="questionText">
+            Frage
+        </div>
+
+        <div
+            id="structureContainer">
+        </div>
+
+        <div
+            class="option-grid"
+            id="optionsContainer">
+        </div>
+
+        <div
+            id="feedbackContainer">
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ERGEBNIS -->
+
+<section
+    class="card result-card hidden"
+    id="resultScreen">
+
+    <h2
+        class="fireworks-title">
+        🎉 Spiel beendet!
+    </h2>
+
+    <div id="resultContent"></div>
+
+    <div class="restart-buttons">
+
+        <button
+            class="restart-btn"
+            onclick="restartGame()">
+
+            🔄 Noch einmal spielen
+
+        </button>
+
+        <button
+            class="change-btn"
+            onclick="changeCourse()">
+
+            ↩ Kurs wechseln
+
+        </button>
+
+    </div>
+
+</section>
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   ALKANE
+========================= */
+
+const alkanes = [
+
+    {
+        name: "Methan",
+        formula: "CH4",
+        n: 1
+    },
+
+    {
+        name: "Ethan",
+        formula: "C2H6",
+        n: 2
+    },
+
+    {
+        name: "Propan",
+        formula: "C3H8",
+        n: 3
+    },
+
+    {
+        name: "Butan",
+        formula: "C4H10",
+        n: 4
+    },
+
+    {
+        name: "Pentan",
+        formula: "C5H12",
+        n: 5
+    },
+
+    {
+        name: "Hexan",
+        formula: "C6H14",
+        n: 6
+    },
+
+    {
+        name: "Heptan",
+        formula: "C7H16",
+        n: 7
+    },
+
+    {
+        name: "Octan",
+        formula: "C8H18",
+        n: 8
+    },
+
+    {
+        name: "Nonan",
+        formula: "C9H20",
+        n: 9
+    },
+
+    {
+        name: "Decan",
+        formula: "C10H22",
+        n: 10
+    }
+
+];
+
+
+/* =========================
+   VARIABLEN
+========================= */
+
+let course = null;
+
+let mode = null;
+
+let teamCount = 2;
+
+let questionCount = 10;
+
+let currentQuestion = 0;
+
+let currentTeam = 0;
+
+let questions = [];
+
+let score = 0;
+
+let teamScores = [];
+
+let teamCorrect = [];
+
+let answered = false;
+
+
+/* =========================
+   TEAMFARBEN
+========================= */
+
+const teamColors = [
+
+    {
+        name: "Rot",
+        main: "#d93636",
+        light: "#ffe5e5"
+    },
+
+    {
+        name: "Grün",
+        main: "#2f8f46",
+        light: "#e4f6e8"
+    },
+
+    {
+        name: "Blau",
+        main: "#3478c5",
+        light: "#e5f0fb"
+    },
+
+    {
+        name: "Orange",
+        main: "#df7a24",
+        light: "#fff0df"
+    }
+
+];
+
+
+/* =========================
+   FORMELN
+========================= */
+
+function formatFormula(formula) {
+
+    return formula.replace(
+        /([A-Z])(\d+)/g,
+        "$1<sub>$2</sub>"
+    );
+
+}
+
+
+function displayFormula(formula) {
+
+    return `
+        <span class="formula">
+            ${formatFormula(formula)}
+        </span>
+    `;
+
+}
+
+
+/* =========================
+   KURS
+========================= */
+
+function selectCourse(selectedCourse) {
+
+    course = selectedCourse;
+
+    document
+        .getElementById("startScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("modeScreen")
+        .classList.remove("hidden");
+
+}
+
+
+/* =========================
+   SPIELMODUS
+========================= */
+
+function selectMode(selectedMode) {
+
+    mode = selectedMode;
+
+    document
+        .getElementById("singleModeButton")
+        .classList.remove("selected");
+
+    document
+        .getElementById("teamModeButton")
+        .classList.remove("selected");
+
+
+    if (selectedMode === "single") {
+
+        document
+            .getElementById("singleModeButton")
+            .classList.add("selected");
+
+        document
+            .getElementById("teamSettings")
+            .classList.add("hidden");
+
+    } else {
+
+        document
+            .getElementById("teamModeButton")
+            .classList.add("selected");
+
+        document
+            .getElementById("teamSettings")
+            .classList.remove("hidden");
+
+    }
+
+}
+
+
+/* =========================
+   TEAMANZAHL
+========================= */
+
+function selectTeamCount(count, button) {
+
+    teamCount = count;
+
+    document
+        .querySelectorAll(".team-count-buttons .setting-btn")
+        .forEach(btn => {
+
+            btn.classList.remove("selected");
+
+        });
+
+    button.classList.add("selected");
+
+}
+
+
+/* =========================
+   FRAGENANZAHL
+========================= */
+
+function selectQuestionCount(count, button) {
+
+    questionCount = count;
+
+    document
+        .querySelectorAll(".question-count-buttons .setting-btn")
+        .forEach(btn => {
+
+            btn.classList.remove("selected");
+
+        });
+
+    button.classList.add("selected");
+
+}
+
+
+/* =========================
+   SPIEL STARTEN
+========================= */
+
+function startGame() {
+
+    if (!course) {
+        return;
+    }
+
+    if (!mode) {
+        mode = "single";
+    }
+
+    currentQuestion = 0;
+
+    currentTeam = 0;
+
+    score = 0;
+
+    answered = false;
+
+    teamScores = [];
+
+    teamCorrect = [];
+
+
+    if (mode === "team") {
+
+        for (
+            let i = 0;
+            i < teamCount;
+            i++
+        ) {
+
+            teamScores.push(0);
+
+            teamCorrect.push(0);
+
+        }
+
+    } else {
+
+        teamScores = [0];
+
+        teamCorrect = [0];
+
+    }
+
+
+    questions = generateQuestions();
+
+
+    document
+        .getElementById("modeScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("gameScreen")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("resultScreen")
+        .classList.add("hidden");
+
+
+    if (mode === "team") {
+
+        document
+            .getElementById("teamBanner")
+            .classList.remove("hidden");
+
+        document
+            .getElementById("teamScores")
+            .classList.remove("hidden");
+
+    } else {
+
+        document
+            .getElementById("teamBanner")
+            .classList.add("hidden");
+
+        document
+            .getElementById("teamScores")
+            .classList.add("hidden");
+
+    }
+
+
+    showQuestion();
+
+}
+
+
+/* =========================
+   FRAGEN ERSTELLEN
+========================= */
+
+function generateQuestions() {
+
+    const result = [];
+
+
+    const possibleTypes = [
+
+        "nameToFormula",
+
+        "formulaToName",
+
+        "nameToStructure",
+
+        "structureToName",
+
+        "carbonToHydrogen"
+
+    ];
+
+
+    if (course === "E") {
+
+        possibleTypes.push(
+            "hydrogenToCarbon"
+        );
+
+    }
+
+
+    for (
+        let i = 0;
+        i < questionCount;
+        i++
+    ) {
+
+        const type =
+            possibleTypes[
+                Math.floor(
+                    Math.random() *
+                    possibleTypes.length
+                )
+            ];
+
+
+        const alkane =
+            alkanes[
+                Math.floor(
+                    Math.random() *
+                    alkanes.length
+                )
+            ];
+
+
+        result.push({
+
+            type: type,
+
+            alkane: alkane
+
+        });
+
+    }
+
+
+    return result;
+
+}
+
+
+/* =========================
+   FRAGE ANZEIGEN
+========================= */
+
+function showQuestion() {
+
+    answered = false;
+
+    const question =
+        questions[currentQuestion];
+
+
+    document
+        .getElementById("progressText")
+        .textContent =
+        `Frage ${currentQuestion + 1} von ${questionCount}`;
+
+
+    document
+        .getElementById("feedbackContainer")
+        .innerHTML = "";
+
+
+    document
+        .getElementById("structureContainer")
+        .innerHTML = "";
+
+
+    document
+        .getElementById("optionsContainer")
+        .innerHTML = "";
+
+
+    if (mode === "team") {
+
+        updateTeamDisplay();
+
+    } else {
+
+        document
+            .getElementById("scoreText")
+            .textContent =
+            `Punkte: ${score}`;
+
+    }
+
+
+    switch (question.type) {
+
+        case "nameToFormula":
+
+            showNameToFormula(question);
+
+            break;
+
+
+        case "formulaToName":
+
+            showFormulaToName(question);
+
+            break;
+
+
+        case "nameToStructure":
+
+            showNameToStructure(question);
+
+            break;
+
+
+        case "structureToName":
+
+            showStructureToName(question);
+
+            break;
+
+
+        case "carbonToHydrogen":
+
+            showCarbonToHydrogen(question);
+
+            break;
+
+
+        case "hydrogenToCarbon":
+
+            showHydrogenToCarbon(question);
+
+            break;
+
+    }
+
+}
+
+
+/* =========================
+   TEAMANZEIGE
+========================= */
+
+function updateTeamDisplay() {
+
+    const team =
+        teamColors[currentTeam];
+
+
+    const banner =
+        document.getElementById("teamBanner");
+
+
+    banner.textContent =
+        `Team ${currentTeam + 1} ist dran!`;
+
+
+    banner.style.background =
+        team.light;
+
+    banner.style.borderColor =
+        team.main;
+
+    banner.style.color =
+        team.main;
+
+
+    const scores =
+        document.getElementById("teamScores");
+
+
+    scores.innerHTML = "";
+
+
+    for (
+        let i = 0;
+        i < teamCount;
+        i++
+    ) {
+
+        const box =
+            document.createElement("div");
+
+
+        box.className =
+            "team-score";
+
+
+        if (i === currentTeam) {
+
+            box.classList.add("active");
+
+        }
+
+
+        box.textContent =
+            `Team ${i + 1}: ${teamScores[i]} Punkt${teamScores[i] === 1 ? "" : "e"}`;
+
+
+        box.style.borderColor =
+            teamColors[i].main;
+
+
+        box.style.background =
+            teamColors[i].light;
+
+
+        box.style.color =
+            teamColors[i].main;
+
+
+        scores.appendChild(box);
+
+    }
+
+
+    document
+        .getElementById("scoreText")
+        .textContent =
+        `Gesamt: ${teamScores.reduce((a,b) => a + b, 0)} Punkte`;
+
+
+    document
+        .getElementById("questionCard")
+        .style.borderColor =
+        team.main;
+
+}
+
+
+/* =========================
+   NAME → FORMEL
+========================= */
+
+function showNameToFormula(question) {
+
+    document
+        .getElementById("questionType")
+        .textContent =
+        "Name → Summenformel";
+
+
+    document
+        .getElementById("questionText")
+        .innerHTML =
+        `Welche Summenformel gehört zu <strong>${question.alkane.name}</strong>?`;
+
+
+    const options =
+        createFormulaOptions(
+            question.alkane
+        );
+
+
+    renderOptions(
+        options,
+        question.alkane.formula
+    );
+
+}
+
+
+/* =========================
+   FORMEL → NAME
+========================= */
+
+function showFormulaToName(question) {
+
+    document
+        .getElementById("questionType")
+        .textContent =
+        "Summenformel → Name";
+
+
+    document
+        .getElementById("questionText")
+        .innerHTML =
+        `Wie heißt das Alkan mit der Summenformel ${displayFormula(question.alkane.formula)}?`;
+
+
+    const options =
+        createNameOptions(
+            question.alkane
+        );
+
+
+    renderOptions(
+        options,
+        question.alkane.name
+    );
+
+}
+
+
+/* =========================
+   NAME → STRUKTUR
+========================= */
+
+function showNameToStructure(question) {
+
+    document
+        .getElementById("questionType")
+        .textContent =
+        "Name → Strukturformel";
+
+
+    document
+        .getElementById("questionText")
+        .innerHTML =
+        `Welche Strukturformel gehört zu <strong>${question.alkane.name}</strong>?`;
+
+
+    const options =
+        createStructureOptions(
+            question.alkane
+        );
+
+
+    renderStructureOptions(
+        options,
+        question.alkane.n
+    );
+
+}
+
+
+/* =========================
+   STRUKTUR → NAME
+========================= */
+
+function showStructureToName(question) {
+
+    document
+        .getElementById("questionType")
+        .textContent =
+        "Strukturformel → Name";
+
+
+    document
+        .getElementById("questionText")
+        .innerHTML =
+        "Wie heißt dieses Alkan?";
+
+
+    document
+        .getElementById("structureContainer")
+        .innerHTML = `
+            <div class="structure-box">
+                ${createStructureSVG(question.alkane.n)}
+            </div>
+        `;
+
+
+    const options =
+        createNameOptions(
+            question.alkane
+        );
+
+
+    renderOptions(
+        options,
+        question.alkane.name
+    );
+
+}
+
+
+/* =========================
+   C → H
+========================= */
+
+function showCarbonToHydrogen(question) {
+
+    const n =
+        Math.floor(
+            Math.random() * 150
+        ) + 1;
+
+
+    question.carbonNumber = n;
+
+    question.correctAnswer =
+        2 * n + 2;
+
+
+    document
+        .getElementById("questionType")
+        .textContent =
+        "Allgemeine Formel";
+
+
+    document
+        .getElementById("questionText")
+        .innerHTML =
+        `Ein Alkan besitzt <strong>${n} C-Atome</strong>. Wie viele H-Atome besitzt es?`;
+
+
+    const correct =
+        2 * n + 2;
+
+
+    const options =
+        createNumberOptions(
+            correct
+        );
+
+
+    renderOptions(
+        options,
+        correct
+    );
+
+}
+
+
+/* =========================
+   H → C
+========================= */
+
+function showHydrogenToCarbon(question) {
+
+    const n =
+        Math.floor(
+            Math.random() * 75
+        ) + 1;
+
+
+    const h =
+        2 * n + 2;
+
+
+    question.hydrogenNumber = h;
+
+    question.correctAnswer = n;
+
+
+    document
+        .getElementById("questionType")
+        .textContent =
+        "Allgemeine Formel";
+
+
+    document
+        .getElementById("questionText")
+        .innerHTML =
+        `Ein Alkan besitzt <strong>${h} H-Atome</strong>. Wie viele C-Atome besitzt es?`;
+
+
+    const options =
+        createNumberOptions(n);
+
+
+    renderOptions(
+        options,
+        n
+    );
+
+}
+
+
+/* =========================
+   OPTIONEN
+========================= */
+
+function createFormulaOptions(correct) {
+
+    const options = [
+        correct.formula
+    ];
+
+
+    while (options.length < 4) {
+
+        const n =
+            Math.max(
+                1,
+                Math.min(
+                    10,
+                    correct.n +
+                    Math.floor(
+                        Math.random() * 7
+                    ) - 3
+                )
+            );
+
+
+        const formula =
+            `C${n}H${2 * n + 2}`;
+
+
+        if (!options.includes(formula)) {
+
+            options.push(formula);
+
+        }
+
+    }
+
+
+    return shuffle(options);
+
+}
+
+
+function createNameOptions(correct) {
+
+    const options = [
+        correct.name
+    ];
+
+
+    while (options.length < 4) {
+
+        const alkane =
+            alkanes[
+                Math.floor(
+                    Math.random() *
+                    alkanes.length
+                )
+            ];
+
+
+        if (
+            !options.includes(
+                alkane.name
+            )
+        ) {
+
+            options.push(
+                alkane.name
+            );
+
+        }
+
+    }
+
+
+    return shuffle(options);
+
+}
+
+
+function createNumberOptions(correct) {
+
+    const options = [
+        correct
+    ];
+
+
+    while (options.length < 4) {
+
+        const variation =
+            Math.floor(
+                Math.random() * 8
+            ) + 1;
+
+
+        let wrong;
+
+
+        if (
+            Math.random() < 0.5
+        ) {
+
+            wrong =
+                correct + variation;
+
+        } else {
+
+            wrong =
+                correct - variation;
+
+        }
+
+
+        if (
+            wrong < 1 ||
+            wrong > 300
+        ) {
+            continue;
+        }
+
+
+        if (
+            !options.includes(wrong)
+        ) {
+
+            options.push(wrong);
+
+        }
+
+    }
+
+
+    return shuffle(options);
+
+}
+
+
+function createStructureOptions(correct) {
+
+    const options = [
+        correct.n
+    ];
+
+
+    while (options.length < 4) {
+
+        const n =
+            Math.floor(
+                Math.random() * 10
+            ) + 1;
+
+
+        if (
+            !options.includes(n)
+        ) {
+
+            options.push(n);
+
+        }
+
+    }
+
+
+    return shuffle(options);
+
+}
+
+
+/* =========================
+   STRUKTUR-OPTIONEN
+========================= */
+
+function renderStructureOptions(
+    options,
+    correct
+) {
+
+    const container =
+        document.getElementById(
+            "optionsContainer"
+        );
+
+
+    options.forEach(n => {
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.className =
+            "answer-btn";
+
+
+        button.innerHTML = `
+            <div
+                class="structure-box"
+                style="
+                    margin:0;
+                    padding:4px;
+                    border:none;
+                    background:white;
+                "
+            >
+                ${createStructureSVG(
+                    n,
+                    500,
+                    180
+                )}
+            </div>
+        `;
+
+
+        button.onclick = () => {
+
+            handleAnswer(
+                n,
+                correct,
+                button
+            );
+
+        };
+
+
+        container.appendChild(
+            button
+        );
+
+    });
+
+}
+
+
+/* =========================
+   NORMALE OPTIONEN
+========================= */
+
+function renderOptions(
+    options,
+    correct
+) {
+
+    const container =
+        document.getElementById(
+            "optionsContainer"
+        );
+
+
+    options.forEach(option => {
+
+        const button =
+            document.createElement(
+                "button"
+            );
+
+
+        button.className =
+            "answer-btn";
+
+
+        if (
+            typeof option === "string" &&
+            /^C\d+H\d+$/.test(option)
+        ) {
+
+            button.innerHTML =
+                displayFormula(option);
+
+        } else {
+
+            button.textContent =
+                option;
+
+        }
+
+
+        button.onclick = () => {
+
+            handleAnswer(
+                option,
+                correct,
+                button
+            );
+
+        };
+
+
+        container.appendChild(
+            button
+        );
+
+    });
+
+}
+
+
+/* =========================
+   ANTWORT AUSWERTEN
+========================= */
+
+function handleAnswer(
+    selected,
+    correct,
+    clickedButton
+) {
+
+    if (answered) {
+        return;
+    }
+
+
+    answered = true;
+
+
+    const buttons =
+        document.querySelectorAll(
+            ".answer-btn"
+        );
+
+
+    buttons.forEach(button => {
+
+        button.classList.add(
+            "disabled"
+        );
+
+        button.disabled = true;
+
+    });
+
+
+    const isCorrect =
+        String(selected) ===
+        String(correct);
+
+
+    if (isCorrect) {
+
+        clickedButton.classList.add(
+            "correct"
+        );
+
+
+        if (mode === "team") {
+
+            teamScores[currentTeam]++;
+
+            teamCorrect[currentTeam]++;
+
+        } else {
+
+            score++;
+
+        }
+
+    } else {
+
+        clickedButton.classList.add(
+            "wrong"
+        );
+
+
+        buttons.forEach(button => {
+
+            const text =
+                button.textContent.trim();
+
+
+            if (
+                String(correct) ===
+                text
+            ) {
+
+                button.classList.add(
+                    "correct"
+                );
+
+            }
+
+        });
+
+    }
+
+
+    if (mode === "team") {
+
+        updateTeamDisplay();
+
+    } else {
+
+        document
+            .getElementById("scoreText")
+            .textContent =
+            `Punkte: ${score}`;
+
+    }
+
+
+    showFeedback(
+        isCorrect,
+        selected,
+        correct
+    );
+
+}
+
+
+/* =========================
+   FEEDBACK
+========================= */
+
+function showFeedback(
+    isCorrect,
+    selected,
+    correct
+) {
+
+    const container =
+        document.getElementById(
+            "feedbackContainer"
+        );
+
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+
+    box.className =
+        `feedback ${
+            isCorrect
+                ? "correct"
+                : "wrong"
+        }`;
+
+
+    const correctDisplay =
+        formatAnswer(correct);
+
+
+    const selectedDisplay =
+        formatAnswer(selected);
+
+
+    if (isCorrect) {
+
+        box.innerHTML = `
+            <div class="explanation">
+
+                <strong>
+                    ✅ Richtig!
+                </strong>
+
+                Deine Antwort ist korrekt.
+
+            </div>
+        `;
+
+    } else {
+
+        box.innerHTML = `
+            <div class="explanation">
+
+                <strong>
+                    ❌ Leider falsch!
+                </strong>
+
+                Deine Antwort:
+                ${selectedDisplay}
+
+                <br>
+
+                Richtige Antwort:
+                <strong>
+                    ${correctDisplay}
+                </strong>
+
+            </div>
+        `;
+
+    }
+
+
+    box.innerHTML += `
+        <div style="margin-top:10px;">
+            💡 ${createExplanation(correct)}
+        </div>
+    `;
+
+
+    const nextButton =
+        document.createElement(
+            "button"
+        );
+
+
+    nextButton.className =
+        "next-btn";
+
+
+    nextButton.textContent =
+        currentQuestion <
+        questionCount - 1
+
+            ? "Nächste Frage →"
+
+            : "Ergebnis anzeigen →";
+
+
+    nextButton.onclick =
+        nextQuestion;
+
+
+    box.appendChild(
+        nextButton
+    );
+
+
+    container.appendChild(
+        box
+    );
+
+}
+
+
+/* =========================
+   ANTWORT FORMATIEREN
+========================= */
+
+function formatAnswer(answer) {
+
+    if (
+        typeof answer === "string" &&
+        /^C\d+H\d+$/.test(answer)
+    ) {
+
+        return displayFormula(
+            answer
+        );
+
+    }
+
+
+    return answer;
+
+}
+
+
+/* =========================
+   ERKLÄRUNGEN
+========================= */
+
+function createExplanation(
+    correct
+) {
+
+    if (
+        typeof correct === "string" &&
+        /^C\d+H\d+$/.test(correct)
+    ) {
+
+        const match =
+            correct.match(
+                /C(\d+)H(\d+)/
+            );
+
+
+        const n =
+            Number(match[1]);
+
+
+        const h =
+            Number(match[2]);
+
+
+        return `
+            Für Alkane gilt die allgemeine
+            Formel C<sub>n</sub>H<sub>2n+2</sub>.
+            Bei ${n} C-Atomen ergibt sich
+            ${h} als Anzahl der H-Atome.
+        `;
+
+    }
+
+
+    if (
+        typeof correct === "number"
+    ) {
+
+        return `
+            Für Alkane gilt die allgemeine
+            Formel C<sub>n</sub>H<sub>2n+2</sub>.
+        `;
+
+    }
+
+
+    const alkane =
+        alkanes.find(
+            a => a.name === correct
+        );
+
+
+    if (alkane) {
+
+        return `
+            ${alkane.name} besitzt die
+            Summenformel
+            ${displayFormula(
+                alkane.formula
+            )}
+            und ${alkane.n} C-Atome.
+        `;
+
+    }
+
+
+    return `
+        Die richtige Antwort ergibt sich
+        aus der Anzahl der C- und H-Atome
+        im Alkan.
+    `;
+
+}
+
+
+/* =========================
+   NÄCHSTE FRAGE
+========================= */
+
+function nextQuestion() {
+
+    currentQuestion++;
+
+
+    if (
+        currentQuestion >=
+        questionCount
+    ) {
+
+        showResults();
+
+        return;
+
+    }
+
+
+    if (mode === "team") {
+
+        currentTeam =
+            (
+                currentTeam + 1
+            ) % teamCount;
+
+    }
+
+
+    showQuestion();
+
+}
+
+
+/* =========================
+   ERGEBNIS
+========================= */
+
+function showResults() {
+
+    document
+        .getElementById("gameScreen")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("resultScreen")
+        .classList.remove("hidden");
+
+
+    const content =
+        document.getElementById(
+            "resultContent"
+        );
+
+
+    if (mode === "single") {
+
+        const percentage =
+            Math.round(
+                score /
+                questionCount *
+                100
+            );
+
+
+        content.innerHTML = `
+
+            <div class="result-score">
+                ${score} / ${questionCount}
+            </div>
+
+            <div class="result-percent">
+                ${percentage}% richtig beantwortet
+            </div>
+
+            <p>
+                Du hast
+                ${score} von
+                ${questionCount}
+                Fragen richtig beantwortet.
+            </p>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    /* TEAMERGEBNIS */
+
+    const highest =
+        Math.max(
+            ...teamScores
+        );
+
+
+    const winners = [];
+
+
+    for (
+        let i = 0;
+        i < teamCount;
+        i++
+    ) {
+
+        if (
+            teamScores[i] === highest
+        ) {
+
+            winners.push(i);
+
+        }
+
+    }
+
+
+    let winnerText;
+
+
+    if (
+        winners.length === 1
+    ) {
+
+        winnerText =
+            `🏆 Team ${winners[0] + 1} gewinnt!`;
+
+    } else {
+
+        winnerText =
+            `🤝 Unentschieden!`;
+
+    }
+
+
+    let html = `
+
+        <div class="winner">
+            ${winnerText}
+        </div>
+
+        <div class="final-team-list">
+
+    `;
+
+
+    for (
+        let i = 0;
+        i < teamCount;
+        i++
+    ) {
+
+        html += `
+
+            <div
+                class="final-team"
+                style="
+                    border-color:
+                        ${teamColors[i].main};
+
+                    background:
+                        ${teamColors[i].light};
+
+                    color:
+                        ${teamColors[i].main};
+                "
+            >
+
+                Team ${i + 1}
+
+                <br>
+
+                <span
+                    style="
+                        font-size:1.4rem;
+                    "
+                >
+                    ${teamScores[i]}
+                    Punkt${teamScores[i] === 1 ? "" : "e"}
+                </span>
+
+                <br>
+
+                <span
+                    style="
+                        font-size:0.9rem;
+                    "
+                >
+                    ${teamCorrect[i]}
+                    richtige Antworten
+                </span>
+
+            </div>
+
+        `;
+
+    }
+
+
+    html += `
+
+        </div>
+
+        <p>
+            Gespielt wurden
+            ${questionCount}
+            Fragen im
+            ${course}-Kurs.
+        </p>
+
+    `;
+
+
+    content.innerHTML =
+        html;
+
+
+    if (
+        winners.length === 1
+    ) {
+
+        startFireworks();
+
+    } else {
+
+        startFireworks();
+
+    }
+
+}
+
+
+/* =========================
+   NEUSTART
+========================= */
+
+function restartGame() {
+
+    stopFireworks();
+
+
+    document
+        .getElementById("resultScreen")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("gameScreen")
+        .classList.remove("hidden");
+
+
+    startGame();
+
+}
+
+
+/* =========================
+   KURS WECHSELN
+========================= */
+
+function changeCourse() {
+
+    stopFireworks();
+
+
+    course = null;
+
+    mode = null;
+
+
+    document
+        .getElementById("resultScreen")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("gameScreen")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("modeScreen")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("startScreen")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("singleModeButton")
+        .classList.remove("selected");
+
+
+    document
+        .getElementById("teamModeButton")
+        .classList.remove("selected");
+
+
+    document
+        .getElementById("teamSettings")
+        .classList.add("hidden");
+
+}
+
+
+/* =========================
+   SHUFFLE
+========================= */
+
+function shuffle(array) {
+
+    const arr = [
+        ...array
+    ];
+
+
+    for (
+        let i = arr.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+
+        [
+            arr[i],
+            arr[j]
+        ] = [
+            arr[j],
+            arr[i]
+        ];
+
+    }
+
+
+    return arr;
+
+}
+
+
+/* =====================================================
+   LINEARE STRUKTURFORMEL
+===================================================== */
+
+function createStructureSVG(
+    n,
+    width = 900,
+    height = 230
+) {
+
+    /*
+       Alle C-Atome liegen auf einer
+       geraden horizontalen Linie.
+       Keine Zickzack-Kette.
+    */
+
+
+    if (n === 1) {
+
+        return createMethaneSVG(
+            width,
+            height
+        );
+
+    }
+
+
+    const leftMargin = 80;
+
+    const rightMargin = 80;
+
+    const usableWidth =
+        width -
+        leftMargin -
+        rightMargin;
+
+
+    const spacing =
+        usableWidth /
+        (n - 1);
+
+
+    const carbonY =
+        height / 2;
+
+
+    let svg = `
+
+        <svg
+            viewBox="0 0 ${width} ${height}"
+            width="${width}"
+            height="${height}"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+
+    `;
+
+
+    /* =========================
+       C-C-BINDUNGEN
+    ========================= */
+
+    for (
+        let i = 0;
+        i < n - 1;
+        i++
+    ) {
+
+        const x1 =
+            leftMargin +
+            i * spacing;
+
+        const x2 =
+            leftMargin +
+            (i + 1) * spacing;
+
+
+        svg += `
+
+            <line
+                x1="${x1}"
+                y1="${carbonY}"
+                x2="${x2}"
+                y2="${carbonY}"
+                stroke="#111"
+                stroke-width="4"
+            />
+
+        `;
+
+    }
+
+
+    /* =========================
+       C-ATOME
+    ========================= */
+
+    for (
+        let i = 0;
+        i < n;
+        i++
+    ) {
+
+        const x =
+            leftMargin +
+            i * spacing;
+
+
+        svg += `
+
+            <circle
+                cx="${x}"
+                cy="${carbonY}"
+                r="23"
+                fill="white"
+                stroke="#111"
+                stroke-width="3"
+            />
+
+            <text
+                x="${x}"
+                y="${carbonY + 6}"
+                text-anchor="middle"
+                font-size="17"
+                font-weight="bold"
+            >
+                C
+            </text>
+
+        `;
+
+    }
+
+
+    /* =========================
+       H-ATOME
+    ========================= */
+
+    for (
+        let i = 0;
+        i < n;
+        i++
+    ) {
+
+        const x =
+            leftMargin +
+            i * spacing;
+
+
+        /*
+           Endständige C-Atome:
+           3 H-Atome
+
+           Innere C-Atome:
+           2 H-Atome
+        */
+
+
+        if (i === 0) {
+
+            /* H oben */
+
+            svg +=
+                hydrogenBond(
+                    x,
+                    carbonY,
+                    x,
+                    carbonY - 65
+                );
+
+
+            /* H unten */
+
+            svg +=
+                hydrogenBond(
+                    x,
+                    carbonY,
+                    x,
+                    carbonY + 65
+                );
+
+
+            /* H links */
+
+            svg +=
+                hydrogenBond(
+                    x,
+                    carbonY,
+                    x - 58,
+                    carbonY
+                );
+
+        }
+
+
+        else if (i === n - 1) {
+
+            /* H oben */
+
+            svg +=
+                hydrogenBond(
+                    x,
+                    carbonY,
+                    x,
+                    carbonY - 65
+                );
+
+
+            /* H unten */
+
+            svg +=
+                hydrogenBond(
+                    x,
+                    carbonY,
+                    x,
+                    carbonY + 65
+                );
+
+
+            /* H rechts */
+
+            svg +=
+                hydrogenBond(
+                    x,
+                    carbonY,
+                    x + 58,
+                    carbonY
+                );
+
+        }
+
+
+        else {
+
+            /* Zwei H-Atome bei inneren C */
+
+            svg +=
+                hydrogenBond(
+                    x,
+                    carbonY,
+                    x,
+                    carbonY - 65
+                );
+
+
+            svg +=
+                hydrogenBond(
+                    x,
+                    carbonY,
+                    x,
+                    carbonY + 65
+                );
+
+        }
+
+    }
+
+
+    svg += `
+        </svg>
+    `;
+
+
+    return svg;
+
+}
+
+
+/* =========================
+   METHAN
+========================= */
+
+function createMethaneSVG(
+    width,
+    height
+) {
+
+    const cx =
+        width / 2;
+
+    const cy =
+        height / 2;
+
+
+    return `
+
+        <svg
+            viewBox="0 0 ${width} ${height}"
+            width="${width}"
+            height="${height}"
+            xmlns="http://www.w3.org/2000/svg"
+        >
+
+            ${hydrogenBond(
+                cx,
+                cy,
+                cx,
+                cy - 65
+            )}
+
+            ${hydrogenBond(
+                cx,
+                cy,
+                cx,
+                cy + 65
+            )}
+
+            ${hydrogenBond(
+                cx,
+                cy,
+                cx - 65,
+                cy
+            )}
+
+            ${hydrogenBond(
+                cx,
+                cy,
+                cx + 65,
+                cy
+            )}
+
+
+            <circle
+                cx="${cx}"
+                cy="${cy}"
+                r="23"
+                fill="white"
+                stroke="#111"
+                stroke-width="3"
+            />
+
+
+            <text
+                x="${cx}"
+                y="${cy + 6}"
+                text-anchor="middle"
+                font-size="17"
+                font-weight="bold"
+            >
+                C
+            </text>
+
+        </svg>
+
+    `;
+
+}
+
+
+/* =========================
+   H-BINDUNG
+========================= */
+
+function hydrogenBond(
+    x1,
+    y1,
+    x2,
+    y2
+) {
+
+    return `
+
+        <line
+            x1="${x1}"
+            y1="${y1}"
+            x2="${x2}"
+            y2="${y2}"
+            stroke="#111"
+            stroke-width="2"
+        />
+
+        <text
+            x="${x2}"
+            y="${y2 + 6}"
+            text-anchor="middle"
+            font-size="17"
+            font-weight="bold"
+        >
+            H
+        </text>
+
+    `;
+
+}
+
+
+/* =====================================================
+   FEUERWERK
+===================================================== */
+
+let fireworksAnimation = null;
+
+let fireworks = [];
+
+
+function startFireworks() {
+
+    const canvas =
+        document.getElementById(
+            "fireworksCanvas"
+        );
+
+
+    canvas.classList.remove(
+        "hidden"
+    );
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    resizeCanvas();
+
+
+    fireworks = [];
+
+
+    for (
+        let i = 0;
+        i < 8;
+        i++
+    ) {
+
+        setTimeout(
+            () => createFirework(),
+            i * 450
+        );
+
+    }
+
+
+    fireworksAnimation =
+        requestAnimationFrame(
+            animateFireworks
+        );
+
+
+    window.addEventListener(
+        "resize",
+        resizeCanvas
+    );
+
+}
+
+
+function resizeCanvas() {
+
+    const canvas =
+        document.getElementById(
+            "fireworksCanvas"
+        );
+
+
+    canvas.width =
+        window.innerWidth;
+
+
+    canvas.height =
+        window.innerHeight;
+
+}
+
+
+function createFirework() {
+
+    const canvas =
+        document.getElementById(
+            "fireworksCanvas"
+        );
+
+
+    const x =
+        Math.random() *
+        canvas.width;
+
+
+    const y =
+        canvas.height *
+        (
+            0.15 +
+            Math.random() * 0.45
+        );
+
+
+    const particles = [];
+
+
+    const colors = [
+        "#ff3b3b",
+        "#35a853",
+        "#3478c5",
+        "#f5a623",
+        "#9b59b6",
+        "#00a6a6"
+    ];
+
+
+    const color =
+        colors[
+            Math.floor(
+                Math.random() *
+                colors.length
+            )
+        ];
+
+
+    for (
+        let i = 0;
+        i < 55;
+        i++
+    ) {
+
+        const angle =
+            Math.random() *
+            Math.PI *
+            2;
+
+
+        const speed =
+            2 +
+            Math.random() * 5;
+
+
+        particles.push({
+
+            x: x,
+
+            y: y,
+
+            vx:
+                Math.cos(angle) *
+                speed,
+
+            vy:
+                Math.sin(angle) *
+                speed,
+
+            life: 1,
+
+            color: color
+
+        });
+
+    }
+
+
+    fireworks.push(
+        ...particles
+    );
+
+}
+
+
+function animateFireworks() {
+
+    const canvas =
+        document.getElementById(
+            "fireworksCanvas"
+        );
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    fireworks =
+        fireworks.filter(
+            particle =>
+                particle.life > 0
+        );
+
+
+    fireworks.forEach(
+        particle => {
+
+            particle.x +=
+                particle.vx;
+
+
+            particle.y +=
+                particle.vy;
+
+
+            particle.vy +=
+                0.06;
+
+
+            particle.life -=
+                0.012;
+
+
+            ctx.globalAlpha =
+                Math.max(
+                    0,
+                    particle.life
+                );
+
+
+            ctx.beginPath();
+
+
+            ctx.arc(
+                particle.x,
+                particle.y,
+                2.5,
+                0,
+                Math.PI * 2
+            );
+
+
+            ctx.fillStyle =
+                particle.color;
+
+
+            ctx.fill();
+
+        }
+    );
+
+
+    ctx.globalAlpha = 1;
+
+
+    fireworksAnimation =
+        requestAnimationFrame(
+            animateFireworks
+        );
+
+}
+
+
+function stopFireworks() {
+
+    const canvas =
+        document.getElementById(
+            "fireworksCanvas"
+        );
+
+
+    canvas.classList.add(
+        "hidden"
+    );
+
+
+    if (
+        fireworksAnimation
+    ) {
+
+        cancelAnimationFrame(
+            fireworksAnimation
+        );
+
+        fireworksAnimation =
+            null;
+
+    }
+
+
+    fireworks = [];
+
+
+    const ctx =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    window.removeEventListener(
+        "resize",
+        resizeCanvas
+    );
+
+}
+
+</script>
+
+</body>
+</html>
